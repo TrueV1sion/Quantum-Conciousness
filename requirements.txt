@@ -1,0 +1,91 @@
+# Core dependencies
+torch>=1.9.0
+torchvision>=0.10.0
+torchaudio>=0.9.0
+transformers>=4.5.0
+numpy>=1.19.0
+scipy>=1.10.0
+tqdm>=4.65.0
+wandb>=0.15.0
+pytest>=7.0.0
+mypy>=1.5.1
+black>=23.7.0
+isort>=5.12.0
+pylint>=2.17.5
+einops>=0.6.1
+datasets>=2.14.0
+accelerate>=0.20.0
+bitsandbytes>=0.41.0
+tokenizers>=0.13.3
+safetensors>=0.3.1
+sentencepiece>=0.1.99
+protobuf>=4.24.0
+peft>=0.5.0
+optimum>=1.13.0
+deepspeed>=0.10.0
+triton>=2.0.0
+flash-attn>=2.3.0
+apex>=0.1
+
+# Quantum processing
+qiskit>=0.39.0
+pennylane>=0.28.0
+cirq>=1.0.0
+qiskit-aer>=0.11.0
+qiskit-ibmq-provider>=0.19.0
+qiskit-nature>=0.5.0
+qiskit-machine-learning>=0.5.0
+
+# Optimization and machine learning
+optuna>=3.0.0
+pytorch-lightning>=2.0.0
+scikit-learn>=1.0.0
+tensorflow>=2.12.0
+tensorflow-quantum>=0.7.0
+
+# Visualization
+plotly>=5.13.0
+matplotlib>=3.4.0
+seaborn>=0.12.0
+networkx>=2.6.0
+ipywidgets>=8.0.0
+jupyter>=1.0.0
+nbformat>=5.7.0
+ipykernel>=6.0.0
+
+# Utilities
+pandas>=1.5.0
+h5py>=3.8.0
+pyarrow>=12.0.0
+fastapi>=0.68.0
+uvicorn>=0.15.0
+python-dotenv>=1.0.0
+requests>=2.28.0
+aiohttp>=3.8.0
+websockets>=11.0.0
+psutil>=5.9.0
+ray>=2.4.0
+
+# GPU support (optional)
+cupy-cuda11x>=11.0.0  # Adjust version based on your CUDA version
+torch-geometric>=2.3.0  # For quantum graph neural networks
+
+# Production deployment
+uvicorn>=0.15.0
+uvloop>=0.16.0
+httptools>=0.3.0
+redis>=4.0.0
+celery>=5.2.0
+pydantic>=1.8.0
+python-dotenv>=0.19.0
+gunicorn>=20.1.0
+types-redis>=4.3.21  # Type stubs for Redis
+types-setuptools>=57.4.14
+types-redis-py>=3.5.0
+
+# GPU Optimization
+torch-distributed>=0.0.1
+accelerate>=0.20.0
+deepspeed>=0.10.0
+triton>=2.0.0
+flash-attn>=2.3.0
