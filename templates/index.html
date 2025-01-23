@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Chat Interface</title>
+    <style>
+        #debug-log {
+            margin: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+        }
+        .chat-container {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        #messages {
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #eee;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .user-message {
+            background: #e3f2fd;
+            margin-left: 20%;
+        }
+        .assistant-message {
+            background: #f5f5f5;
+            margin-right: 20%;
+        }
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+        #message-input {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 8px 16px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #1557b0;
+        }
+    </style>
+</head>
+<body>
+    <div id="debug-log">
+        <strong>Debug Log:</strong>
+        <pre id="debug-output"></pre>
+    </div>
+
+    <div class="chat-container">
+        <div id="messages"></div>
+        <div class="input-container">
+            <input 
+                type="text" 
+                id="message-input"
+                placeholder="Type a message..."
+                autocomplete="off"
+            >
+            <button onclick="debugSendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // Debug logging
+        function debugLog(message) {
+            const output = document.getElementById('debug-output');
+            const timestamp = new Date().toISOString();
+            const logMessage = `${timestamp}: ${message}`;
+            output.innerHTML += logMessage + '\n';
+            output.scrollTop = output.scrollHeight;
+            console.log(logMessage);
+        }
+
+        // Add message to chat
+        function addMessage(text, type) {
+            debugLog(`Adding message: ${type} - ${text}`);
+            const messages = document.getElementById('messages');
+            const div = document.createElement('div');
+            div.className = `message ${type}-message`;
+            div.textContent = text;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // Send message with debug logging
+        async function debugSendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            
+            debugLog(`Input value: "${message}"`);
+            
+            if (!message) {
+                debugLog('No message to send');
+                return;
+            }
+
+            debugLog(`Attempting to send message: ${message}`);
+            addMessage(message, 'user');
+            input.value = '';
+
+            try {
+                debugLog('Making fetch request to /chat');
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ message })
+                });
+                
+                debugLog(`Server response status: ${response.status}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                debugLog(`Received response data: ${JSON.stringify(data)}`);
+                
+                if (data && data.response && data.response.text) {
+                    addMessage(data.response.text, 'assistant');
+                } else {
+                    throw new Error('Invalid response format');
+                }
+            } catch (error) {
+                debugLog(`Error: ${error.message}`);
+                addMessage(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Handle Enter key
+        document.getElementById('message-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                debugLog('Enter key pressed');
+                e.preventDefault();
+                debugSendMessage();
+            }
+        });
+
+        // Log when page loads
+        window.onload = function() {
+            debugLog('Page loaded');
+            // Focus input field
+            document.getElementById('message-input').focus();
+        };
+    </script>
+</body>
+</html>
