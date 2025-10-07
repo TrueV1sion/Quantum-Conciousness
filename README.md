@@ -134,5 +134,5 @@ If you use this framework in your research, please cite:
 
 ## Contact
 
-Your Name - your.email@example.com
+Jared Peck - peckinsights@gmail.com
 Project Link: https://github.com/yourusername/quantum-consciousness 
