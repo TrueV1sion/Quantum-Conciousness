@@ -115,9 +115,7 @@ quantum-consciousness/
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Citation
 
@@ -126,13 +124,14 @@ If you use this framework in your research, please cite:
 ```bibtex
 @software{quantum_consciousness,
   title = {Quantum Consciousness Framework},
-  author = {Your Name},
+  author = {Jared Peck},
   year = {2023},
-  url = {https://github.com/yourusername/quantum-consciousness}
+  url = {https://github.com/TrueV1sion/quantum-consciousness}
 }
 ```
 
 ## Contact
 
 Jared Peck - peckinsights@gmail.com
-Project Link: https://github.com/yourusername/quantum-consciousness 
+Project Link: https://github.com/TrueV1sion/quantum-consciousness 
+
