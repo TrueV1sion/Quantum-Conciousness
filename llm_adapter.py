@@ -5,6 +5,11 @@ from dataclasses import dataclass
 from datetime import datetime
 import logging
 from collections import deque
+from transformers import (
+    AutoTokenizer,
+    AutoModel,
+    AutoModelForCausalLM,
+)
 
 from bridge import QuantumConsciousnessResonanceBridge, TransferDirection, TransferredInformation
 from config import BridgeConfig
@@ -58,7 +63,29 @@ class LLMConsciousnessAdapter:
         self.bridge = QuantumConsciousnessResonanceBridge(config)
         self.state_mapper = QuantumStateMapper(config)
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        
+
+        # Lightweight models for embeddings and generation
+        embedding_model_name = "sshleifer/tiny-distilroberta-base"
+        generation_model_name = "sshleifer/tiny-gpt2"
+
+        self.embedding_tokenizer = AutoTokenizer.from_pretrained(embedding_model_name)
+        self.embedding_model = AutoModel.from_pretrained(embedding_model_name).to(self.device)
+        self.embedding_model.eval()
+
+        self.generation_tokenizer = AutoTokenizer.from_pretrained(generation_model_name)
+        self.generation_model = AutoModelForCausalLM.from_pretrained(generation_model_name).to(self.device)
+        self.generation_model.eval()
+
+        # Projection layers to match model dimensions
+        self.embedding_projection = nn.Linear(
+            self.embedding_model.config.hidden_size,
+            self.config.hidden_dim,
+        ).to(self.device)
+        self.generation_projection = nn.Linear(
+            self.config.hidden_dim,
+            self.generation_model.config.n_embd,
+        ).to(self.device)
+
         # Initialize model cache
         self.state_cache = {}
         
@@ -103,14 +130,35 @@ class LLMConsciousnessAdapter:
             raise
     
     def _compute_llm_states(self, input_text: str) -> torch.Tensor:
-        """Compute LLM hidden states for input text."""
-        # TODO: Implement actual LLM state computation
-        # This is a placeholder that creates random states for demonstration
-        batch_size, seq_len, hidden_dim = 1, len(input_text), self.config.hidden_dim
-        return torch.randn(batch_size, seq_len, hidden_dim, device=self.device)
+        """Compute LLM hidden states for input text using a lightweight model."""
+        inputs = self.embedding_tokenizer(
+            input_text,
+            return_tensors="pt",
+            truncation=True,
+        )
+        inputs = {k: v.to(self.device) for k, v in inputs.items()}
+
+        with torch.no_grad():
+            outputs = self.embedding_model(**inputs)
+            hidden = outputs.last_hidden_state
+
+        projected = self.embedding_projection(hidden)
+        return projected
     
     async def _generate_enhanced_output(self, enhanced_states: torch.Tensor) -> str:
-        """Generate enhanced output text from states."""
-        # TODO: Implement actual text generation from enhanced states
-        # This is a placeholder that returns the input text
-        return "Enhanced output placeholder" 
+        """Generate enhanced output text from states using a lightweight model."""
+        if enhanced_states.dim() == 2:
+            enhanced_states = enhanced_states.unsqueeze(0)
+
+        embeds = self.generation_projection(enhanced_states.to(self.device))
+
+        with torch.no_grad():
+            generated_ids = self.generation_model.generate(
+                inputs_embeds=embeds,
+                max_length=embeds.size(1) + 10,
+            )
+
+        text = self.generation_tokenizer.decode(
+            generated_ids[0], skip_special_tokens=True
+        )
+        return text
