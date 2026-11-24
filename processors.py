@@ -105,7 +105,7 @@ class QuantumGateLayer(nn.Module):
         """Apply quantum gate transformation."""
         # Handle batched input
         batch_size = x.size(0)
-        unitary = matrix_exponential(self.unitary)
+        unitary = torch.linalg.matrix_exp(self.unitary)
         unitary = unitary.unsqueeze(0).expand(batch_size, -1, -1)
         return torch.bmm(unitary, x.unsqueeze(-1)).squeeze(-1)
 
